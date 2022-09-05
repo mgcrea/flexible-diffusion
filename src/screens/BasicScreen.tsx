@@ -1,17 +1,22 @@
-import React, { FunctionComponent, HTMLProps } from "react";
-import { PromptInput } from "src/components";
+import React, { FunctionComponent, HTMLProps, useEffect } from "react";
+import { Counter, PromptInput, Image, ImageGrid } from "src/components";
+import { useAppDispatch } from "src/hooks";
+import { restoreOutputsState } from "src/store";
 
 export type BasicScreenProps = HTMLProps<HTMLDivElement>;
 
 export const BasicScreen: FunctionComponent<BasicScreenProps> = ({
   ...otherProps
 }) => {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(restoreOutputsState());
+  }, []);
   return (
     <div {...otherProps}>
       <PromptInput />
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <br />
+      <ImageGrid />
     </div>
   );
 };
