@@ -2,57 +2,75 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../root";
 import { PromptConfig, PromptOptions } from "src/types";
-import { parseNumberFromRegex, replaceAll, replaceOrAppend } from "src/utils";
+import {
+  parseFloatFromRegex,
+  parseNumberFromRegex,
+  parseStringFromRegex,
+  replaceAll,
+  replaceOrAppend,
+} from "src/utils";
 
 const DEFAULT_VALUE = "a photograph of an astronaut riding a horse";
-const STEPS_REGEX = /(?:\s\-s|\-\-steps)[\s]*([\d]+)/;
-const SEED_REGEX = /(?:\s\-S|\-\-seed)[\s]*([\d]+)/;
-const ITERATIONS_REGEX = /(?:\s\-n|\-\-iterations)[\s]*([\d]+)/;
-const WIDTH_REGEX = /(?:\s\-W|\-\-width)[\s]*([\d]+)/;
-const HEIGHT_REGEX = /(?:\s\-H|\-\-height)[\s]*([\d]+)/;
 
 type PromptState = { value: string; config: PromptConfig };
 
-const initialState: PromptState = {
-  value: DEFAULT_VALUE,
-  config: {
-    prompt: DEFAULT_VALUE,
-    iterations: 1,
-    steps: 5,
-    cfgscale: 7.5,
-    sampler: "ddim",
-    width: 512,
-    height: 512,
-    seed: -1,
-    initimg: null,
-    strength: 0.75,
-    fit: "on",
-    gfpgan_strength: 0.8,
-    upscale_level: "",
-    upscale_strength: 0.75,
-    progress_images: "on",
-  },
+const DEFAULTS: PromptConfig = {
+  prompt: "",
+  iterations: 1,
+  steps: 5,
+  cfgscale: 7.5,
+  sampler: "k_lms",
+  width: 512,
+  height: 512,
+  seed: -1,
+  initimg: null,
+  strength: 0.75,
+  fit: "on",
+  gfpgan_strength: 0.8,
+  upscale_level: "",
+  upscale_strength: 0.75,
+  progress_images: "on",
 };
 
-const parsePromptValue = (
-  value: string
-): Pick<
-  PromptConfig,
-  "prompt" | "seed" | "iterations" | "steps" | "width" | "height"
-> => {
-  const seed = parseNumberFromRegex(value, SEED_REGEX, -1);
-  const iterations = parseNumberFromRegex(value, ITERATIONS_REGEX, 1);
-  const steps = parseNumberFromRegex(value, STEPS_REGEX, 5);
-  const width = parseNumberFromRegex(value, WIDTH_REGEX, 512);
-  const height = parseNumberFromRegex(value, HEIGHT_REGEX, 512);
-  const prompt = replaceAll(value, [
-    SEED_REGEX,
-    ITERATIONS_REGEX,
-    STEPS_REGEX,
-    WIDTH_REGEX,
-    HEIGHT_REGEX,
-  ]).trim();
-  return { prompt, seed, iterations, steps, width, height };
+const initialState: PromptState = {
+  value: DEFAULT_VALUE,
+  config: DEFAULTS,
+};
+
+export const PROMPT_REGEXES = {
+  seed: /\s(?:\-S|\-\-seed)[\s]*(\-?[\d]+)/,
+  steps: /\s(?:\-s|\-\-steps)[\s]*([\d]+)/,
+  iterations: /\s(?:\-n|\-\-iterations)[\s]*([\d]+)/,
+  width: /\s(?:\-W|\-\-width)[\s]*([\d]+)/,
+  height: /\s(?:\-H|\-\-height)[\s]*([\d]+)/,
+  cfgscale: /\s(?:\-C|\-\-cfg_scale)[\s]*([\d\.]+)/,
+  sampler: /\s(?:\-A|\-m|\-\-sampler)[\s]*([a-z_]+)/,
+  strength: /\s(?:\-f|\-\-strength)[\s]*([\d\.]+)/,
+};
+export const PROMPT_SHORT_ARGS = {
+  seed: "-S",
+  steps: "-s",
+  iterations: "-n",
+  width: "-W",
+  height: "-H",
+  cfgscale: "-C",
+  sampler: "-A",
+  strength: "-f",
+};
+
+export type ParseableArgs = keyof typeof PROMPT_REGEXES;
+
+const parsePromptValue = (value: string): Pick<PromptConfig, ParseableArgs & { prompt: string }> => {
+  const seed = parseNumberFromRegex(value, PROMPT_REGEXES.seed, -1);
+  const iterations = parseNumberFromRegex(value, PROMPT_REGEXES.iterations, DEFAULTS.iterations);
+  const steps = parseNumberFromRegex(value, PROMPT_REGEXES.steps, DEFAULTS.steps);
+  const width = parseNumberFromRegex(value, PROMPT_REGEXES.width, DEFAULTS.width);
+  const height = parseNumberFromRegex(value, PROMPT_REGEXES.height, DEFAULTS.height);
+  const cfgscale = parseFloatFromRegex(value, PROMPT_REGEXES.cfgscale, DEFAULTS.cfgscale);
+  // const sampler = parseStringFromRegex(value, PROMPT_REGEXES.sampler, "k_lms");
+  const strength = parseFloatFromRegex(value, PROMPT_REGEXES.strength, DEFAULTS.strength);
+  const prompt = replaceAll(value, Object.values(PROMPT_REGEXES)).trim();
+  return { prompt, seed, iterations, steps, width, height, cfgscale, strength };
 };
 
 export const promptSlice = createSlice({
@@ -69,9 +87,9 @@ export const promptSlice = createSlice({
       const config = parsePromptValue(state.value);
       Object.assign(state.config, config);
     },
-    seed: (state, action: PayloadAction<number>) => {
-      const { payload: seed } = action;
-      state.value = replaceOrAppend(state.value, SEED_REGEX, ` -S${seed}`);
+    param: (state, action: PayloadAction<[keyof typeof PROMPT_REGEXES, unknown]>) => {
+      const [key, value] = action.payload;
+      state.value = replaceOrAppend(state.value, PROMPT_REGEXES[key], ` ${PROMPT_SHORT_ARGS[key]}${value}`);
       const config = parsePromptValue(state.value);
       Object.assign(state.config, config);
     },
@@ -79,9 +97,5 @@ export const promptSlice = createSlice({
   extraReducers: (builder) => {},
 });
 
-export const {
-  change: changePrompt,
-  parse: parsePrompt,
-  seed: seedPrompt,
-} = promptSlice.actions;
+export const { change: changePrompt, parse: parsePrompt, param: paramPrompt } = promptSlice.actions;
 export const { reducer: promptReducer } = promptSlice;

@@ -1,20 +1,13 @@
-import { SparklesIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { FingerPrintIcon, SparklesIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { FunctionComponent, HTMLProps } from "react";
 import { useAppDispatch, useAppSelector } from "src/hooks";
-import {
-  deleteOutputEntityById,
-  OutputEntity,
-  seedPrompt,
-  selectOrderedEntities,
-} from "src/store";
+import { deleteOutputEntityById, OutputEntity, paramPrompt, selectOrderedEntities } from "src/store";
 import { HTMLStyleProps } from "src/types";
-import { Button } from "./Button";
+import { Button, IconButton } from "./Button";
 
-export type ImageGridProps = HTMLProps<HTMLDivElement>;
+export type ImageGridProps = HTMLStyleProps<HTMLDivElement>;
 
-export const ImageGrid: FunctionComponent<ImageGridProps> = ({
-  ...otherProps
-}) => {
+export const ImageGrid: FunctionComponent<ImageGridProps> = ({ ...otherProps }) => {
   // const { entities, entity } = useAppSelector((state) => state.outputs);
   const list = useAppSelector((state) => selectOrderedEntities(state));
   const dispatch = useAppDispatch();
@@ -38,42 +31,28 @@ export type ImageGridItemProps = HTMLStyleProps & {
   onDeleteClick: (id: string) => void;
 };
 
-export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({
-  value,
-  onDeleteClick,
-  ...otherProps
-}) => {
+export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({ value, onDeleteClick, ...otherProps }) => {
   const dispatch = useAppDispatch();
   const imgSrc = `http://localhost:9090/${value.url.slice(1)}`;
   return (
     <div className="relative">
-      <div className="overflow-hidden bg-gray-200 border-2 border-transparent rounded-md group-hover:border-indigo-400 min-h-80 aspect-w-1 aspect-h-1 group-hover:opacity-95">
+      <div className="overflow-hidden bg-gray-400 dark:bg-gray-400 border-transparent rounded-md border-2 group-hover:border-indigo-400 min-h-80 aspect-w-1 aspect-h-1 group-hover:opacity-95">
         <img src={imgSrc} className="object-cover object-center" />
       </div>
       <div className="absolute bottom-0 left-0 p-2 opacity-75 group-hover:opacity-100">
         {/* <div className="px-2 py-1 text-xs font-medium text-center text-gray-600 bg-white bg-opacity-50 border-gray-500 border-solid rounded-md backdrop-filter border-1">
           {value.seed}
         </div> */}
-        <Button
-          size="xs"
-          className="flex items-center justify-center rounded-md backdrop-filter"
-          onClick={() => dispatch(seedPrompt(value.seed))}
-        >
-          {/* D&nbsp;
-          <span className="hidden group-hover:inline">{value.seed}</span> */}
-
-          <SparklesIcon className="w-3 h-3" aria-hidden="true" />
+        <Button size="xs" overlay onClick={() => dispatch(paramPrompt(["seed", value.seed]))}>
+          <FingerPrintIcon className="w-3 h-3" aria-hidden="true" />
           <span className="pl-1 mb-[-1px]">{value.seed}</span>
         </Button>
       </div>
 
       <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100">
-        <Button
-          className="flex items-center justify-center w-5 h-5 px-0 py-0 rounded-full backdrop-filter"
-          onClick={() => onDeleteClick(value.id)}
-        >
+        <IconButton overlay onClick={() => onDeleteClick(value.id)}>
           <TrashIcon className="w-3 h-3" aria-hidden="true" />
-        </Button>
+        </IconButton>
       </div>
     </div>
   );

@@ -5,9 +5,7 @@ import { restoreOutputsState } from "src/store";
 
 export type BasicScreenProps = HTMLProps<HTMLDivElement>;
 
-export const BasicScreen: FunctionComponent<BasicScreenProps> = ({
-  ...otherProps
-}) => {
+export const BasicScreen: FunctionComponent<BasicScreenProps> = ({ ...otherProps }) => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(restoreOutputsState());
@@ -15,7 +13,6 @@ export const BasicScreen: FunctionComponent<BasicScreenProps> = ({
   return (
     <div {...otherProps}>
       <PromptInput />
-      <br />
       <ImageGrid />
     </div>
   );

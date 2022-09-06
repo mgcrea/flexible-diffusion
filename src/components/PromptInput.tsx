@@ -2,6 +2,7 @@ import { ChangeEvent, FunctionComponent, HTMLProps, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "src/hooks";
 import { changePrompt, parsePrompt, promptOutput } from "src/store";
 import { Input, InputProps } from "./Input";
+import { PromptDetails } from "./PromptDetails";
 import { PromptProgress } from "./PromptProgress";
 
 const PLACEHOLDER = "a photograph of an astronaut riding a horse";
@@ -45,7 +46,7 @@ export const PromptInput: FunctionComponent<PromptInputProps> = ({
     } else if (key === " ") {
     }
   };
-  const { prompt: _, initimg, ...otherPromptConfig } = config;
+  const { initimg, ...otherPromptConfig } = config;
   return (
     <div {...otherProps}>
       <Input
@@ -58,11 +59,7 @@ export const PromptInput: FunctionComponent<PromptInputProps> = ({
         // disabled={["pending", "loading"].includes(status)}
       />
       <PromptProgress progress={progress * 100} status={status} />
-      <pre className="flex">
-        <code className="w-10 text-xs">
-          {JSON.stringify(otherPromptConfig)}
-        </code>
-      </pre>
+      <PromptDetails config={config} />
     </div>
   );
 };
