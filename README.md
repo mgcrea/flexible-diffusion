@@ -8,6 +8,6 @@ Work in progress web ui for the [dream/server.py](https://github.com/lstein/stab
 
 <p align="center">
   <a href="https://github.com/mgcrea/flexible-diffusion">
-    <img src="https://raw.githubusercontent.com/mgcrea/flexible-diffusion/master/.github/screenshot.jpg" height="768" />
+    <img src="https://raw.githubusercontent.com/mgcrea/flexible-diffusion/master/.github/screenshot.jpg" />
   </a>
 </p>
