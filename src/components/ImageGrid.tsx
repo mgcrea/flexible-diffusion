@@ -47,7 +47,7 @@ export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({
   const imgSrc = `http://localhost:9090/${value.url.slice(1)}`;
   return (
     <div className="relative">
-      <div className="overflow-hidden bg-gray-200 border-2 border-transparent rounded-md group-hover:border-purple-400 min-h-80 aspect-w-1 aspect-h-1 group-hover:opacity-95">
+      <div className="overflow-hidden bg-gray-200 border-2 border-transparent rounded-md group-hover:border-indigo-400 min-h-80 aspect-w-1 aspect-h-1 group-hover:opacity-95">
         <img src={imgSrc} className="object-cover object-center" />
       </div>
       <div className="absolute bottom-0 left-0 p-2 opacity-75 group-hover:opacity-100">
@@ -56,7 +56,7 @@ export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({
         </div> */}
         <Button
           size="xs"
-          className="flex items-center justify-center backdrop-filter"
+          className="flex items-center justify-center rounded-md backdrop-filter"
           onClick={() => dispatch(seedPrompt(value.seed))}
         >
           {/* D&nbsp;
@@ -69,7 +69,7 @@ export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({
 
       <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100">
         <Button
-          className="flex items-center justify-center w-5 h-5 px-0 py-0 backdrop-filter"
+          className="flex items-center justify-center w-5 h-5 px-0 py-0 rounded-full backdrop-filter"
           onClick={() => onDeleteClick(value.id)}
         >
           <TrashIcon className="w-3 h-3" aria-hidden="true" />

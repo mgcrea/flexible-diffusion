@@ -114,7 +114,7 @@ export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
 type OutputsState = {
   entities: Record<string, OutputEntity>;
   entity: PartialEntity | null;
-  status: "idle" | "pending" | "working" | "succeeded" | "failed";
+  status: "idle" | "pending" | "loading" | "succeeded" | "failed";
   currentStep: number;
   totalSteps: number;
 };
@@ -145,7 +145,8 @@ export const outputsSlice = createSlice({
       const serializedState = localStorage.getItem("outputs");
       console.log({ serializedState });
       if (serializedState) {
-        return JSON.parse(serializedState);
+        const restoredState = JSON.parse(serializedState);
+        return { ...initialState, ...restoredState };
       }
     });
     builder.addCase(deleteOutputEntityById, (state, { payload }) => {
@@ -155,6 +156,7 @@ export const outputsSlice = createSlice({
     builder.addCase(promptOutput.pending, (state, action) => {
       console.log("pending", { action });
       state.status = "pending";
+      state.currentStep = 0;
       state.entity = createEntity();
     });
     builder.addCase(promptOutputConfig, (state, { payload }) => {
@@ -165,6 +167,7 @@ export const outputsSlice = createSlice({
     builder.addCase(promptOutputStep, (state, { payload }) => {
       console.log("step", payload);
       const { event, ...otherProps } = payload;
+      state.status = "loading";
       state.currentStep = payload.step;
       // @NOTE can happen when n > 1
       if (!state.entity) {

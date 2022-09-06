@@ -32,7 +32,7 @@ export const Button: FunctionComponent<ButtonProps> = ({
       type={type}
       className={classNames(
         sizeClassNames[size],
-        "opacity-80 text-gray-700 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-50 active:bg-gray-200 focus:outline-none",
+        "opacity-80 text-gray-700 bg-white border border-gray-300 shadow-sm hover:bg-gray-50 active:bg-gray-200 focus:outline-none",
         // "px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 active:bg-gray-200 focus:outline-none",
         className
       )}
