@@ -1,12 +1,13 @@
-import { configureStore, Selector } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { dreamApi } from "src/services";
 import { localStorageMiddleware } from "./middlewares";
-import { outputsSlice } from "./slices";
+import { outputsSlice, promptSlice } from "./slices";
 
 export const store = configureStore({
   reducer: {
     [dreamApi.reducerPath]: dreamApi.reducer,
     outputs: outputsSlice.reducer,
+    prompt: promptSlice.reducer,
   },
   // Adding the api middleware enables caching, invalidation, polling,
   // and other useful features of `rtk-query`.

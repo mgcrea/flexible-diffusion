@@ -1,4 +1,5 @@
 import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { DREAM_API_HOST } from "src/config/env";
 import { PromptConfig, PromptOptions } from "src/types";
 import { withPayloadType } from "src/utils";
 
@@ -28,6 +29,8 @@ export type OutputEntity = {
   promptedAt: number;
   createdAt: number;
 };
+export type PartialEntity = Partial<OutputEntity> &
+  Pick<OutputEntity, "id" | "steps" | "promptedAt">;
 
 export const promptDefaults: PromptConfig = {
   prompt: "ocean",
@@ -59,32 +62,22 @@ const promptOutputResult = createAction(
   "outputs/prompt/result",
   withPayloadType<OutputResult>()
 );
+export const deleteOutputEntityById = createAction(
+  "outputs/entities/delete",
+  withPayloadType<string>()
+);
 export const restoreOutputsState = createAction(
   "outputs/restore",
   withPayloadType<void>()
 );
 
-// export const restoreState = createAsyncThunk<void, null>(
-//   "outputs/prompt",
-//   // if you type your function argument here
-//   async (options: PromptOptions, { getState, dispatch, rejectWithValue }) => {
-//     const serializedState = localStorage.getItem('outputs');
-//     if (serializedState) {
-//       const state = JSON.parse(serializedState);
-//     }
-//     return serializedState;
-//   }
-// );
-
 export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
   "outputs/prompt",
-  // if you type your function argument here
-  async (options: PromptOptions, { getState, dispatch, rejectWithValue }) => {
-    // const state = getState();
+  async (options: PromptOptions, { dispatch, rejectWithValue }) => {
     const config = { ...promptDefaults, ...options };
     dispatch(promptOutputConfig(config));
     const body = JSON.stringify(config);
-    const response = await fetch(`http://localhost:9090`, {
+    const response = await fetch(DREAM_API_HOST, {
       method: "POST",
       body,
     });
@@ -120,7 +113,7 @@ export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
 
 type OutputsState = {
   entities: Record<string, OutputEntity>;
-  entity: (Partial<OutputEntity> & { id: string }) | null;
+  entity: PartialEntity | null;
   status: "idle" | "pending" | "working" | "succeeded" | "failed";
   currentStep: number;
   totalSteps: number;
@@ -134,7 +127,7 @@ const initialState: OutputsState = {
   totalSteps: 0,
 };
 
-const createEntity = (): Pick<OutputEntity, "id" | "promptedAt" | "steps"> => ({
+const createEntity = (): PartialEntity => ({
   id: crypto.randomUUID(),
   promptedAt: Date.now(),
   steps: [],
@@ -154,6 +147,10 @@ export const outputsSlice = createSlice({
       if (serializedState) {
         return JSON.parse(serializedState);
       }
+    });
+    builder.addCase(deleteOutputEntityById, (state, { payload }) => {
+      console.log("delete", payload);
+      delete state.entities[payload];
     });
     builder.addCase(promptOutput.pending, (state, action) => {
       console.log("pending", { action });
