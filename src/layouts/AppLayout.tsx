@@ -16,12 +16,9 @@ export const AppLayout: FunctionComponent<AppLayoutProps> = ({ children }) => {
 
         {/* Main content */}
         <div className="flex flex-1 items-stretch overflow-hidden">
-          <main className="flex-1 overflow-y-auto p-4">
+          <main className="flex-1 overflow-y-auto p-4 pt-12">
             {/* Primary column */}
-            <section
-              aria-labelledby="primary-heading"
-              className="flex h-full min-w-0 flex-1 flex-col lg:order-last"
-            >
+            <section aria-labelledby="primary-heading" className="flex h-full min-w-0 flex-1 flex-col lg:order-last">
               <h1 id="primary-heading" className="sr-only">
                 Photos
               </h1>

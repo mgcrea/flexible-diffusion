@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "app": "/Applications/Electron.app/Contents/MacOS/Electron app/",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"

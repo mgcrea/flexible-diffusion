@@ -67,10 +67,10 @@ const parsePromptValue = (value: string): Pick<PromptConfig, ParseableArgs & { p
   const width = parseNumberFromRegex(value, PROMPT_REGEXES.width, DEFAULTS.width);
   const height = parseNumberFromRegex(value, PROMPT_REGEXES.height, DEFAULTS.height);
   const cfgscale = parseFloatFromRegex(value, PROMPT_REGEXES.cfgscale, DEFAULTS.cfgscale);
-  // const sampler = parseStringFromRegex(value, PROMPT_REGEXES.sampler, "k_lms");
+  const sampler = parseStringFromRegex(value, PROMPT_REGEXES.sampler, DEFAULTS.sampler);
   const strength = parseFloatFromRegex(value, PROMPT_REGEXES.strength, DEFAULTS.strength);
   const prompt = replaceAll(value, Object.values(PROMPT_REGEXES)).trim();
-  return { prompt, seed, iterations, steps, width, height, cfgscale, strength };
+  return { prompt, seed, iterations, steps, width, height, cfgscale, sampler, strength };
 };
 
 export const promptSlice = createSlice({

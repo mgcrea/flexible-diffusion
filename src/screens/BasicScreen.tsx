@@ -1,5 +1,5 @@
-import React, { FunctionComponent, HTMLProps, useEffect } from "react";
-import { Counter, PromptInput, Image, ImageGrid } from "src/components";
+import { FunctionComponent, HTMLProps, useEffect } from "react";
+import { ImageGrid, PromptInput } from "src/components";
 import { useAppDispatch } from "src/hooks";
 import { restoreOutputsState } from "src/store";
 
