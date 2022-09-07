@@ -2,6 +2,7 @@ import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { DREAM_API_HOST } from "src/config/env";
 import { PromptConfig, PromptOptions } from "src/types";
 import { withPayloadType } from "src/utils";
+import { PROMPT_DEFAULTS } from "./promptSlice";
 
 type OutputResult = {
   event: "result";
@@ -31,24 +32,6 @@ export type OutputEntity = {
 };
 export type PartialEntity = Partial<OutputEntity> & Pick<OutputEntity, "id" | "steps" | "promptedAt">;
 
-export const promptDefaults: PromptConfig = {
-  prompt: "ocean",
-  iterations: 1,
-  steps: 5,
-  cfgscale: 7.5,
-  sampler: "ddim",
-  width: 512,
-  height: 512,
-  seed: -1,
-  initimg: null,
-  strength: 0.75,
-  fit: "on",
-  gfpgan_strength: 0.8,
-  upscale_level: "",
-  upscale_strength: 0.75,
-  progress_images: "on",
-};
-
 const promptOutputConfig = createAction("outputs/prompt/config", withPayloadType<PromptConfig>());
 const promptOutputStep = createAction("outputs/prompt/step", withPayloadType<OutputStep>());
 const promptOutputResult = createAction("outputs/prompt/result", withPayloadType<OutputResult>());
@@ -58,7 +41,7 @@ export const restoreOutputsState = createAction("outputs/restore", withPayloadTy
 export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
   "outputs/prompt",
   async (options: PromptOptions, { dispatch, rejectWithValue }) => {
-    const config = { ...promptDefaults, ...options };
+    const config = { ...PROMPT_DEFAULTS, ...options };
     dispatch(promptOutputConfig(config));
     const body = JSON.stringify(config);
     const response = await fetch(DREAM_API_HOST, {

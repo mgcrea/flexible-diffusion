@@ -14,7 +14,7 @@ const DEFAULT_VALUE = "a photograph of an astronaut riding a horse";
 
 type PromptState = { value: string; config: PromptConfig };
 
-const DEFAULTS: PromptConfig = {
+export const PROMPT_DEFAULTS: PromptConfig = {
   cfgscale: 7.5,
   fit: "on",
   gfpgan_strength: 0.8,
@@ -36,7 +36,7 @@ const DEFAULTS: PromptConfig = {
 
 const initialState: PromptState = {
   value: DEFAULT_VALUE,
-  config: DEFAULTS,
+  config: { ...PROMPT_DEFAULTS },
 };
 
 export const PROMPT_REGEXES = {
@@ -65,15 +65,19 @@ export const PROMPT_SHORT_ARGS = {
 export type ParseableArgs = keyof typeof PROMPT_REGEXES;
 
 const parsePromptValue = (value: string): Pick<PromptConfig, ParseableArgs & { prompt: string }> => {
-  const seed = parseNumberFromRegex(value, PROMPT_REGEXES.seed, DEFAULTS.seed);
-  const iterations = parseNumberFromRegex(value, PROMPT_REGEXES.iterations, DEFAULTS.iterations);
-  const steps = parseNumberFromRegex(value, PROMPT_REGEXES.steps, DEFAULTS.steps);
-  const width = parseNumberFromRegex(value, PROMPT_REGEXES.width, DEFAULTS.width);
-  const height = parseNumberFromRegex(value, PROMPT_REGEXES.height, DEFAULTS.height);
-  const cfgscale = parseFloatFromRegex(value, PROMPT_REGEXES.cfgscale, DEFAULTS.cfgscale);
-  const sampler = parseStringFromRegex(value, PROMPT_REGEXES.sampler, DEFAULTS.sampler);
-  const strength = parseFloatFromRegex(value, PROMPT_REGEXES.strength, DEFAULTS.strength);
-  const variation_amount = parseFloatFromRegex(value, PROMPT_REGEXES.variation_amount, DEFAULTS.variation_amount);
+  const seed = parseNumberFromRegex(value, PROMPT_REGEXES.seed, PROMPT_DEFAULTS.seed);
+  const iterations = parseNumberFromRegex(value, PROMPT_REGEXES.iterations, PROMPT_DEFAULTS.iterations);
+  const steps = parseNumberFromRegex(value, PROMPT_REGEXES.steps, PROMPT_DEFAULTS.steps);
+  const width = parseNumberFromRegex(value, PROMPT_REGEXES.width, PROMPT_DEFAULTS.width);
+  const height = parseNumberFromRegex(value, PROMPT_REGEXES.height, PROMPT_DEFAULTS.height);
+  const cfgscale = parseFloatFromRegex(value, PROMPT_REGEXES.cfgscale, PROMPT_DEFAULTS.cfgscale);
+  const sampler = parseStringFromRegex(value, PROMPT_REGEXES.sampler, PROMPT_DEFAULTS.sampler);
+  const strength = parseFloatFromRegex(value, PROMPT_REGEXES.strength, PROMPT_DEFAULTS.strength);
+  const variation_amount = parseFloatFromRegex(
+    value,
+    PROMPT_REGEXES.variation_amount,
+    PROMPT_DEFAULTS.variation_amount
+  );
   const prompt = replaceAll(value, Object.values(PROMPT_REGEXES)).trim();
   return { prompt, seed, iterations, steps, width, height, cfgscale, sampler, strength, variation_amount };
 };
