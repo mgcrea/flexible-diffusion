@@ -7,6 +7,7 @@ import {
   FingerPrintIcon,
   ScaleIcon,
   SwatchIcon,
+  DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
 import React, { cloneElement, FunctionComponent, HTMLProps, ReactElement } from "react";
 import { useAppDispatch } from "src/hooks";
@@ -66,6 +67,12 @@ export const PromptDetails: FunctionComponent<PromptDetailsProps> = ({ className
         label="strength"
         value={config.strength}
         title={"Strength for noising/unnoising. 0.0 preserves image exactly, 1.0 replaces it completely"}
+      />
+      <PromptTag
+        icon={<DocumentDuplicateIcon />}
+        label="variation_amount"
+        value={config.variation_amount}
+        title="If > 0, generates variations on the initial seed instead of random seeds per iteration. Must be between 0 and 1. Higher values will be more different."
       />
       {/* <pre className="flex">
         <code className="w-10 text-xs">{JSON.stringify(config, null, 2)}</code>

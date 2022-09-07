@@ -29,8 +29,7 @@ export type OutputEntity = {
   promptedAt: number;
   createdAt: number;
 };
-export type PartialEntity = Partial<OutputEntity> &
-  Pick<OutputEntity, "id" | "steps" | "promptedAt">;
+export type PartialEntity = Partial<OutputEntity> & Pick<OutputEntity, "id" | "steps" | "promptedAt">;
 
 export const promptDefaults: PromptConfig = {
   prompt: "ocean",
@@ -50,26 +49,11 @@ export const promptDefaults: PromptConfig = {
   progress_images: "on",
 };
 
-const promptOutputConfig = createAction(
-  "outputs/prompt/config",
-  withPayloadType<PromptConfig>()
-);
-const promptOutputStep = createAction(
-  "outputs/prompt/step",
-  withPayloadType<OutputStep>()
-);
-const promptOutputResult = createAction(
-  "outputs/prompt/result",
-  withPayloadType<OutputResult>()
-);
-export const deleteOutputEntityById = createAction(
-  "outputs/entities/delete",
-  withPayloadType<string>()
-);
-export const restoreOutputsState = createAction(
-  "outputs/restore",
-  withPayloadType<void>()
-);
+const promptOutputConfig = createAction("outputs/prompt/config", withPayloadType<PromptConfig>());
+const promptOutputStep = createAction("outputs/prompt/step", withPayloadType<OutputStep>());
+const promptOutputResult = createAction("outputs/prompt/result", withPayloadType<OutputResult>());
+export const deleteOutputEntityById = createAction("outputs/entities/delete", withPayloadType<string>());
+export const restoreOutputsState = createAction("outputs/restore", withPayloadType<void>());
 
 export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
   "outputs/prompt",
@@ -110,6 +94,14 @@ export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
     return result as OutputResult;
   }
 );
+
+export const cancelOutput = createAsyncThunk<void, void>("outputs/prompt", async (_, { dispatch, rejectWithValue }) => {
+  const response = await fetch(`${DREAM_API_HOST}/cancel`, {
+    method: "GET",
+  });
+  const body = await response.json();
+  console.log({ body });
+});
 
 type OutputsState = {
   entities: Record<string, OutputEntity>;

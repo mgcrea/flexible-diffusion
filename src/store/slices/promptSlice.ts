@@ -15,21 +15,23 @@ const DEFAULT_VALUE = "a photograph of an astronaut riding a horse";
 type PromptState = { value: string; config: PromptConfig };
 
 const DEFAULTS: PromptConfig = {
-  prompt: "",
-  iterations: 1,
-  steps: 5,
   cfgscale: 7.5,
-  sampler: "k_lms",
-  width: 512,
-  height: 512,
-  seed: -1,
-  initimg: null,
-  strength: 0.75,
   fit: "on",
   gfpgan_strength: 0.8,
+  height: 512,
+  initimg_name: "",
+  initimg: null,
+  iterations: 1,
+  prompt: "",
+  sampler: "k_lms",
+  seed: -1,
+  steps: 5,
+  strength: 0.75,
   upscale_level: "",
   upscale_strength: 0.75,
-  progress_images: "on",
+  variation_amount: 0,
+  width: 512,
+  with_variations: "",
 };
 
 const initialState: PromptState = {
@@ -46,6 +48,7 @@ export const PROMPT_REGEXES = {
   cfgscale: /\s(?:\-C|\-\-cfg_scale)[\s]*([\d\.]+)/,
   sampler: /\s(?:\-A|\-m|\-\-sampler)[\s]*([a-z_]+)/,
   strength: /\s(?:\-f|\-\-strength)[\s]*([\d\.]+)/,
+  variation_amount: /\s(?:\-v|\-\-variation_amount)[\s]*([\d\.]+)/,
 };
 export const PROMPT_SHORT_ARGS = {
   seed: "-S",
@@ -56,12 +59,13 @@ export const PROMPT_SHORT_ARGS = {
   cfgscale: "-C",
   sampler: "-A",
   strength: "-f",
+  variation_amount: "-v",
 };
 
 export type ParseableArgs = keyof typeof PROMPT_REGEXES;
 
 const parsePromptValue = (value: string): Pick<PromptConfig, ParseableArgs & { prompt: string }> => {
-  const seed = parseNumberFromRegex(value, PROMPT_REGEXES.seed, -1);
+  const seed = parseNumberFromRegex(value, PROMPT_REGEXES.seed, DEFAULTS.seed);
   const iterations = parseNumberFromRegex(value, PROMPT_REGEXES.iterations, DEFAULTS.iterations);
   const steps = parseNumberFromRegex(value, PROMPT_REGEXES.steps, DEFAULTS.steps);
   const width = parseNumberFromRegex(value, PROMPT_REGEXES.width, DEFAULTS.width);
@@ -69,8 +73,9 @@ const parsePromptValue = (value: string): Pick<PromptConfig, ParseableArgs & { p
   const cfgscale = parseFloatFromRegex(value, PROMPT_REGEXES.cfgscale, DEFAULTS.cfgscale);
   const sampler = parseStringFromRegex(value, PROMPT_REGEXES.sampler, DEFAULTS.sampler);
   const strength = parseFloatFromRegex(value, PROMPT_REGEXES.strength, DEFAULTS.strength);
+  const variation_amount = parseFloatFromRegex(value, PROMPT_REGEXES.variation_amount, DEFAULTS.variation_amount);
   const prompt = replaceAll(value, Object.values(PROMPT_REGEXES)).trim();
-  return { prompt, seed, iterations, steps, width, height, cfgscale, sampler, strength };
+  return { prompt, seed, iterations, steps, width, height, cfgscale, sampler, strength, variation_amount };
 };
 
 export const promptSlice = createSlice({

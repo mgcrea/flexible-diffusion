@@ -12,8 +12,9 @@ const sizeClassNames: Record<ButtonSize, string> = {
   xl: "px-4 py-2 text-sm font-medium",
 };
 const variantClassNames: Record<ButtonVariant, string> = {
-  light: "text-gray-700 bg-white hover:bg-gray-100 border border-gray-300 active:bg-gray-200",
-  dark: "text-gray-100 bg-zinc-600 hover:bg-zinc-500 active:bg-zinc-700",
+  light:
+    "text-gray-700 bg-white border border-gray-300 hover:enabled:bg-gray-100 active:enabled:bg-gray-200 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed",
+  dark: "text-gray-100 bg-zinc-600 hover:enabled:bg-zinc-500 active:enabled:bg-zinc-700",
 };
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
