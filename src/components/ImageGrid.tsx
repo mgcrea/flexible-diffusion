@@ -1,5 +1,6 @@
-import { FingerPrintIcon, SparklesIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { FunctionComponent, HTMLProps } from "react";
+import { FingerPrintIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { FunctionComponent } from "react";
+import { DREAM_API_HOST } from "src/config/env";
 import { useAppDispatch, useAppSelector } from "src/hooks";
 import { deleteOutputEntityById, OutputEntity, paramPrompt, selectOrderedEntities } from "src/store";
 import { HTMLStyleProps } from "src/types";
@@ -33,7 +34,7 @@ export type ImageGridItemProps = HTMLStyleProps & {
 
 export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({ value, onDeleteClick, ...otherProps }) => {
   const dispatch = useAppDispatch();
-  const imgSrc = `http://localhost:9090/${value.url.slice(1)}`;
+  const imgSrc = `${DREAM_API_HOST}/${value.url}`;
   return (
     <div className="relative">
       <div className="overflow-hidden bg-gray-400 dark:bg-gray-400 border-transparent rounded-md border-2 group-hover:border-indigo-400 min-h-80 aspect-w-1 aspect-h-1 group-hover:opacity-95">
