@@ -7,9 +7,9 @@ type ButtonVariant = "light" | "dark";
 const sizeClassNames: Record<ButtonSize, string> = {
   xs: "px-2 py-1 text-xs font-medium",
   sm: "px-4 py-2 text-sm font-medium",
-  md: "px-4 py-2 text-sm font-medium",
-  lg: "px-4 py-2 text-sm font-medium",
-  xl: "px-4 py-2 text-sm font-medium",
+  md: "px-4 py-2 text-md font-medium",
+  lg: "px-4 py-2 text-lg font-medium",
+  xl: "px-4 py-2 text-xl font-medium",
 };
 const variantClassNames: Record<ButtonVariant, string> = {
   light:

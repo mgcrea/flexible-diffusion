@@ -4,8 +4,6 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [
-    require("@tailwindcss/aspect-ratio"),
-    require("@tailwindcss/forms"),
-  ],
+  safelist: ["opacity-25", "opacity-75"],
+  plugins: [require("@tailwindcss/aspect-ratio"), require("@tailwindcss/forms")],
 };

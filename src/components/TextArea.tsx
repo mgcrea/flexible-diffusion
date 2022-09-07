@@ -1,15 +1,15 @@
 import React, { FunctionComponent, HTMLProps } from "react";
 import { classNames } from "src/utils";
 
-export type InputProps = HTMLProps<HTMLInputElement>;
+export type TextAreaProps = HTMLProps<HTMLTextAreaElement>;
 
-export const Input: FunctionComponent<InputProps> = ({
+export const TextArea: FunctionComponent<TextAreaProps> = ({
   name,
   label,
   className,
   disabled,
-  spellCheck = false,
   type = "text",
+  spellCheck = false,
   children,
   ...inputProps
 }) => {
@@ -28,12 +28,11 @@ export const Input: FunctionComponent<InputProps> = ({
           {label}
         </label>
       ) : null}
-      <input
-        name={name}
-        type={type}
+      <textarea
         spellCheck={spellCheck}
+        name={name}
         disabled={disabled}
-        className="block w-full h-12 p-0 text-gray-800 placeholder-gray-400 bg-transparent border-0 dark:text-gray-200 focus:ring-0 text-md"
+        className="block w-full h-12 p-1 text-gray-800 placeholder-gray-400 bg-transparent border-0 dark:text-gray-200 focus:ring-0 text-md"
         {...inputProps}
       />
       {children}
