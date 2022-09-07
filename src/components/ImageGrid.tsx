@@ -1,4 +1,4 @@
-import { FingerPrintIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { DocumentDuplicateIcon, FingerPrintIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { FunctionComponent } from "react";
 import { DREAM_API_HOST } from "src/config/env";
 import { useAppDispatch, useAppSelector } from "src/hooks";
@@ -9,18 +9,22 @@ import { Button, IconButton } from "./Button";
 export type ImageGridProps = HTMLStyleProps<HTMLDivElement>;
 
 export const ImageGrid: FunctionComponent<ImageGridProps> = ({ ...otherProps }) => {
-  // const { entities, entity } = useAppSelector((state) => state.outputs);
+  const { entities } = useAppSelector((state) => state.outputs);
   const list = useAppSelector((state) => selectOrderedEntities(state));
   const dispatch = useAppDispatch();
   const onDeleteClick = (id: string) => {
     console.log(`delete ${id}`);
     dispatch(deleteOutputEntityById(id));
   };
+  const onCopyClick = (id: string) => {
+    console.log(`click ${id}`);
+    navigator.clipboard.writeText(entities[id].config.prompt);
+  };
   return (
     <div className="grid grid-cols-1 mt-6 gap-y-6 gap-x-6 sm:grid-cols-2 md:grid-cols-4 xl:gap-x-8 xl:gap-y-8">
       {list.map((value) => (
         <div key={value.id} className="relative group">
-          <ImageGridItem onDeleteClick={onDeleteClick} value={value} />
+          <ImageGridItem onDeleteClick={onDeleteClick} onCopyClick={onCopyClick} value={value} />
         </div>
       ))}
     </div>
@@ -30,9 +34,15 @@ export const ImageGrid: FunctionComponent<ImageGridProps> = ({ ...otherProps }) 
 export type ImageGridItemProps = HTMLStyleProps & {
   value: OutputEntity;
   onDeleteClick: (id: string) => void;
+  onCopyClick: (id: string) => void;
 };
 
-export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({ value, onDeleteClick, ...otherProps }) => {
+export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({
+  value,
+  onDeleteClick,
+  onCopyClick,
+  ...otherProps
+}) => {
   const dispatch = useAppDispatch();
   const imgSrc = `${DREAM_API_HOST}/${value.url}`;
   return (
@@ -51,8 +61,14 @@ export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({ value, on
       </div>
 
       <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100">
-        <IconButton overlay onClick={() => onDeleteClick(value.id)}>
+        <IconButton overlay onClick={() => onDeleteClick(value.id)} title="Delete output">
           <TrashIcon className="w-3 h-3" aria-hidden="true" />
+        </IconButton>
+      </div>
+
+      <div className="absolute bottom-0 right-0 p-2 opacity-20 group-hover:opacity-100">
+        <IconButton overlay onClick={() => onCopyClick(value.id)} title="Copy prompt">
+          <DocumentDuplicateIcon className="w-3 h-3" aria-hidden="true" />
         </IconButton>
       </div>
     </div>
