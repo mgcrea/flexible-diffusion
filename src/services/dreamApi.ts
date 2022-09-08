@@ -1,22 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { PROMPT_DEFAULTS } from "src/store";
 import { PromptConfig, PromptOptions } from "src/types";
-
-export const defaults: PromptConfig = {
-  prompt: "ocean",
-  iterations: 1,
-  steps: 5,
-  cfgscale: 7.5,
-  sampler: "ddim",
-  width: 512,
-  height: 512,
-  seed: -1,
-  initimg: null,
-  strength: 0.75,
-  fit: "on",
-  gfpgan_strength: 0.8,
-  upscale_level: "",
-  upscale_strength: 0.75,
-};
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:9090/",
@@ -31,7 +15,7 @@ export const dreamApi = createApi({
       query: (options) => ({
         url: "/",
         method: "POST",
-        body: { ...defaults, ...options },
+        body: { ...PROMPT_DEFAULTS, ...options },
       }),
       transformResponse: (response, meta, arg) => {
         console.log({ response });
