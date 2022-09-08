@@ -87,12 +87,22 @@ export const promptSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    restore: (state, action: PayloadAction<void>) => {
+      const serializedState = localStorage.getItem("prompt");
+      if (serializedState) {
+        const restoredState = JSON.parse(serializedState);
+        console.log({ restoredState: restoredState.value });
+        return { ...initialState, ...restoredState };
+      }
+    },
     change: (state, action: PayloadAction<string>) => {
       state.value = action.payload;
     },
-    parse: (state, action: PayloadAction<string>) => {
+    parse: (state, action: PayloadAction<string | undefined>) => {
       const { payload: value } = action;
-      state.value = value;
+      if (value) {
+        state.value = value;
+      }
       const config = parsePromptValue(state.value);
       Object.assign(state.config, config);
     },
@@ -106,5 +116,10 @@ export const promptSlice = createSlice({
   extraReducers: (builder) => {},
 });
 
-export const { change: changePrompt, parse: parsePrompt, param: paramPrompt } = promptSlice.actions;
+export const {
+  restore: restorePrompt,
+  change: changePrompt,
+  parse: parsePrompt,
+  param: paramPrompt,
+} = promptSlice.actions;
 export const { reducer: promptReducer } = promptSlice;

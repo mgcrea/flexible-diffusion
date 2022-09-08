@@ -2,7 +2,7 @@ import { DocumentDuplicateIcon, FingerPrintIcon, TrashIcon } from "@heroicons/re
 import { FunctionComponent } from "react";
 import { DREAM_API_HOST } from "src/config/env";
 import { useAppDispatch, useAppSelector } from "src/hooks";
-import { deleteOutputEntityById, OutputEntity, paramPrompt, selectOrderedEntities } from "src/store";
+import { deleteOutputEntityById, OutputEntity, paramPrompt, parsePrompt, selectOrderedEntities } from "src/store";
 import { HTMLStyleProps } from "src/types";
 import { Button, IconButton } from "./Button";
 
@@ -13,12 +13,12 @@ export const ImageGrid: FunctionComponent<ImageGridProps> = ({ ...otherProps }) 
   const list = useAppSelector((state) => selectOrderedEntities(state));
   const dispatch = useAppDispatch();
   const onDeleteClick = (id: string) => {
-    console.log(`delete ${id}`);
     dispatch(deleteOutputEntityById(id));
   };
   const onCopyClick = (id: string) => {
-    console.log(`click ${id}`);
-    navigator.clipboard.writeText(entities[id].config.prompt);
+    const prompt = entities[id].config.input || entities[id].config.prompt;
+    navigator.clipboard.writeText(prompt);
+    dispatch(parsePrompt(prompt));
   };
   return (
     <div className="grid grid-cols-1 mt-6 gap-y-6 gap-x-6 sm:grid-cols-2 md:grid-cols-4 xl:gap-x-8 xl:gap-y-8">
@@ -44,7 +44,7 @@ export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({
   ...otherProps
 }) => {
   const dispatch = useAppDispatch();
-  const imgSrc = `${DREAM_API_HOST}/${value.url}`;
+  const imgSrc = `/${value.url}`;
   return (
     <div className="relative">
       <div className="overflow-hidden bg-gray-400 dark:bg-gray-400 border-transparent rounded-md border-2 group-hover:border-indigo-400 min-h-80 aspect-w-1 aspect-h-1 group-hover:opacity-95">

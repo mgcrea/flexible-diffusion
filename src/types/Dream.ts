@@ -9,6 +9,7 @@ export type PromptConfig = {
   initimg: null;
   iterations: number;
   progress_images?: "off" | "on";
+  input?: string; // internal
   prompt: string;
   sampler: Sampler;
   seed: number;

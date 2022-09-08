@@ -1,5 +1,4 @@
-import { createAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { DREAM_API_HOST } from "src/config/env";
+import { createAction, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PromptConfig, PromptOptions } from "src/types";
 import { withPayloadType } from "src/utils";
 import { PROMPT_DEFAULTS } from "./promptSlice";
@@ -15,6 +14,10 @@ type OutputStep = {
   step: number;
   url: string | null;
 };
+type CanceledStep = {
+  event: "canceled";
+};
+type UnknownOutputStep = OutputResult | OutputStep | CanceledStep;
 type InlineStep = {
   step: number;
   url: string | null;
@@ -22,6 +25,7 @@ type InlineStep = {
 };
 export type OutputEntity = {
   id: string;
+  input: string;
   options: PromptConfig;
   config: PromptConfig;
   seed: number;
@@ -40,11 +44,11 @@ export const restoreOutputsState = createAction("outputs/restore", withPayloadTy
 
 export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
   "outputs/prompt",
-  async (options: PromptOptions, { dispatch, rejectWithValue }) => {
+  async (options: PromptOptions, { dispatch, getState, rejectWithValue }) => {
     const config = { ...PROMPT_DEFAULTS, ...options };
     dispatch(promptOutputConfig(config));
     const body = JSON.stringify(config);
-    const response = await fetch(DREAM_API_HOST, {
+    const response = await fetch("/dream", {
       method: "POST",
       body,
     });
@@ -53,16 +57,18 @@ export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
     }
     const reader = response.body.getReader();
     const textDecoder = new TextDecoder();
-    let result: OutputResult | OutputStep | null = null;
+    let result: UnknownOutputStep | null = null;
     while (true) {
       let { value, done } = await reader.read();
       const decoded = textDecoder.decode(value);
       if (decoded) {
-        result = JSON.parse(decoded) as OutputResult | OutputStep;
+        result = JSON.parse(decoded) as UnknownOutputStep;
         if (result.event === "step") {
           dispatch(promptOutputStep(result));
         } else if (result.event === "result") {
           dispatch(promptOutputResult(result));
+        } else if (result.event === "canceled") {
+          dispatch(canceledOutput(result));
         } else {
           console.log("unknown event", (result as any).event);
         }
@@ -79,7 +85,7 @@ export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
 );
 
 export const cancelOutput = createAsyncThunk<void, void>("outputs/prompt", async (_, { dispatch, rejectWithValue }) => {
-  const response = await fetch(`${DREAM_API_HOST}/cancel`, {
+  const response = await fetch(`/cancel`, {
     method: "GET",
   });
   const body = await response.json();
@@ -89,7 +95,7 @@ export const cancelOutput = createAsyncThunk<void, void>("outputs/prompt", async
 type OutputsState = {
   entities: Record<string, OutputEntity>;
   entity: PartialEntity | null;
-  status: "idle" | "pending" | "loading" | "succeeded" | "failed";
+  status: "idle" | "pending" | "loading" | "succeeded" | "failed" | "canceled";
   currentStep: number;
   totalSteps: number;
 };
@@ -112,13 +118,13 @@ export const outputsSlice = createSlice({
   name: "outputs",
   initialState,
   reducers: {
-    // fill in primary logic here
+    canceled: (state, action: PayloadAction<CanceledStep>) => {
+      // state.status = "canceled";
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(restoreOutputsState, (state, { payload }) => {
-      console.log("restore", payload);
       const serializedState = localStorage.getItem("outputs");
-      console.log({ serializedState });
       if (serializedState) {
         const restoredState = JSON.parse(serializedState);
         return { ...initialState, ...restoredState };
@@ -160,8 +166,12 @@ export const outputsSlice = createSlice({
       state.entity = null;
     });
     builder.addCase(promptOutput.fulfilled, (state, { payload }) => {
-      state.status = "succeeded";
       console.log("fulfilled", payload);
+      if (payload?.event === "result") {
+        state.status = "succeeded";
+      } else if (payload?.event === "canceled") {
+        state.status = "canceled";
+      }
     });
     builder.addCase(promptOutput.rejected, (state, { payload }) => {
       state.status = "failed";
@@ -170,4 +180,5 @@ export const outputsSlice = createSlice({
   },
 });
 
+export const { canceled: canceledOutput } = outputsSlice.actions;
 export const { reducer: outputsReducer } = outputsSlice;

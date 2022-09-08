@@ -1,7 +1,7 @@
 import { BarsArrowUpIcon, FireIcon, NoSymbolIcon } from "@heroicons/react/24/outline";
 import { ChangeEvent, FunctionComponent, HTMLProps, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "src/hooks";
-import { cancelOutput, changePrompt, parsePrompt, promptOutput } from "src/store";
+import { cancelOutput, changePrompt, parsePrompt, promptOutput, restorePrompt } from "src/store";
 import { Button } from "./Button";
 import { Input, InputProps } from "./Input";
 import { PromptDetails } from "./PromptDetails";
@@ -23,37 +23,27 @@ export const PromptInput: FunctionComponent<PromptInputProps> = ({ ...otherProps
   const isDreaming = ["pending", "loading"].includes(status);
 
   useEffect(() => {
-    dispatch(parsePrompt(value));
+    dispatch(restorePrompt());
   }, []);
 
   // const [value, setValue] = useState<string>(lastValue);
   const onChange: TextAreaProps["onChange"] = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    // setValue(event.target.value);
-    // dispatch(change(event.target.value));
     dispatch(parsePrompt(event.target.value));
   };
-  // const onBlur: InputProps["onChange"] = (
-  //   event: ChangeEvent<HTMLInputElement>
-  // ) => {
-  //   dispatch(parsePrompt(event.target.value));
-  // };
   const onKeyDown: TextAreaProps["onKeyDown"] = async (evt) => {
     const { key } = evt;
     // console.log({key});
     if (key === "Enter") {
       evt.preventDefault();
-      dispatch(parsePrompt(value));
-      await dispatch(promptOutput(prompt.config)).unwrap();
+      await onDreamClick();
     } else if (key === " ") {
     }
   };
   const onDreamClick = async () => {
-    console.log("click!");
-    dispatch(parsePrompt(value));
-    await dispatch(promptOutput(prompt.config)).unwrap();
+    await dispatch(parsePrompt(value));
+    await dispatch(promptOutput({ input: value, ...prompt.config })).unwrap();
   };
   const onCancelClick = async () => {
-    console.log("click!");
     await dispatch(cancelOutput()).unwrap();
   };
   const { initimg, ...otherPromptConfig } = config;
@@ -70,20 +60,19 @@ export const PromptInput: FunctionComponent<PromptInputProps> = ({ ...otherProps
       >
         {isDreaming ? (
           <Button onClick={onCancelClick} disabled={!isDreaming} className="mr-2" title="Cancel">
-            <NoSymbolIcon className="h-[32px] w-[32px] text-gray-400" aria-hidden="true" />
+            <NoSymbolIcon className="h-[24px] w-[24px] text-gray-400" aria-hidden="true" />
           </Button>
         ) : null}
-        <Button onClick={onDreamClick} disabled={isDreaming} size="xl">
+        <Button onClick={onDreamClick} disabled={isDreaming} size="md">
           <>
             {isDreaming ? (
-              <CircleIcon className="animate-spin h-[32px] w-[32px] mr-2" />
+              <CircleIcon className="animate-spin h-[24px] w-[24px] mr-1" />
             ) : (
               <FireIcon
-                className={classNames("h-[32px] w-[32px] text-gray-400 mr-2", isDreaming ? "animate-pulse" : "")}
+                className={classNames("h-[24px] w-[24px] text-gray-400 mr-1", isDreaming ? "animate-pulse" : "")}
                 aria-hidden="true"
               />
             )}
-            {/* <img src={loadingIcon} className="h-8 w-8 fill-rose-900" alt="loading" /> */}
             Dream
           </>
         </Button>

@@ -97,7 +97,7 @@ export const PromptTag: FunctionComponent<PromptTagProps> = ({ className, icon, 
       onClick={() => dispatch(paramPrompt([label, value]))}
       className={classNames(" py-1 px-2 mr-1 inline-flex", className)}
     >
-      {icon ? cloneElement(icon, { className: "w-4 h-4", ariaHidden: true }) : null}
+      {icon ? cloneElement(icon, { className: "w-4 h-4", "aria-hidden": true }) : null}
       <span className="text-xs font-medium px-1">{value}</span>
       <span style={{ fontSize: 12 }}>{label}</span>
     </Button>

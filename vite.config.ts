@@ -36,7 +36,6 @@ export default defineConfig(({ mode }) => {
       ],
     },
     server: {
-      port: 3000,
       proxy: {
         "/cancel": {
           target: STABLE_DIFFUSION_SERVER,
