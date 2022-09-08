@@ -1,4 +1,5 @@
 export * from "./Button";
+export * from "./FileInput";
 export * from "./Image";
 export * from "./ImageGrid";
 export * from "./Input";

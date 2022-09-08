@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../root";
 import { PromptConfig, PromptOptions } from "src/types";
 import {
+  keyExists,
   parseFloatFromRegex,
   parseNumberFromRegex,
   parseStringFromRegex,
@@ -63,6 +64,7 @@ export const PROMPT_SHORT_ARGS = {
 };
 
 export type ParseableArgs = keyof typeof PROMPT_REGEXES;
+export type AllArgs = ParseableArgs | "initimg";
 
 const parsePromptValue = (value: string): Pick<PromptConfig, ParseableArgs & { prompt: string }> => {
   const seed = parseNumberFromRegex(value, PROMPT_REGEXES.seed, PROMPT_DEFAULTS.seed);
@@ -106,11 +108,23 @@ export const promptSlice = createSlice({
       const config = parsePromptValue(state.value);
       Object.assign(state.config, config);
     },
-    param: (state, action: PayloadAction<[keyof typeof PROMPT_REGEXES, unknown]>) => {
+    param: (state, action: PayloadAction<[AllArgs, unknown]>) => {
       const [key, value] = action.payload;
-      state.value = replaceOrAppend(state.value, PROMPT_REGEXES[key], ` ${PROMPT_SHORT_ARGS[key]}${value}`);
-      const config = parsePromptValue(state.value);
-      Object.assign(state.config, config);
+      if (key === "initimg") {
+        console.log({ key, value });
+        if (value === null) {
+          state.config.initimg = null;
+          state.config.initimg_name = "";
+          return;
+        }
+        const [initimg_name, initimg] = (value as string).split("|");
+        state.config.initimg = initimg;
+        state.config.initimg_name = initimg_name;
+      } else {
+        state.value = replaceOrAppend(state.value, PROMPT_REGEXES[key], ` ${PROMPT_SHORT_ARGS[key]}${value}`);
+        const config = parsePromptValue(state.value);
+        Object.assign(state.config, config);
+      }
     },
   },
   extraReducers: (builder) => {},

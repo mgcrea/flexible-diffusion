@@ -28,6 +28,7 @@ export const PromptInput: FunctionComponent<PromptInputProps> = ({ ...otherProps
 
   // const [value, setValue] = useState<string>(lastValue);
   const onChange: TextAreaProps["onChange"] = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    // @TODO debounce
     dispatch(parsePrompt(event.target.value));
   };
   const onKeyDown: TextAreaProps["onKeyDown"] = async (evt) => {

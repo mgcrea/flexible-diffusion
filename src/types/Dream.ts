@@ -6,7 +6,7 @@ export type PromptConfig = {
   gfpgan_strength: number;
   height: number;
   initimg_name: string;
-  initimg: null;
+  initimg: string | null;
   iterations: number;
   progress_images?: "off" | "on";
   input?: string; // internal

@@ -9,7 +9,6 @@ export const localStorageMiddleware: Middleware = (store) => (next) => (action) 
     localStorage.setItem("outputs", JSON.stringify({ entities: outputs.entities }));
   } else if (parsePrompt.match(action) || paramPrompt.match(action)) {
     const { prompt } = store.getState();
-    console.log("savedState", { prompt: prompt.value, action: action.type });
     localStorage.setItem("prompt", JSON.stringify(prompt));
   }
   return result;

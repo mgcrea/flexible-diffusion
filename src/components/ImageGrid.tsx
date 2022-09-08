@@ -21,7 +21,7 @@ export const ImageGrid: FunctionComponent<ImageGridProps> = ({ ...otherProps }) 
     dispatch(parsePrompt(prompt));
   };
   return (
-    <div className="grid grid-cols-1 mt-6 gap-y-6 gap-x-6 sm:grid-cols-2 md:grid-cols-4 xl:gap-x-8 xl:gap-y-8">
+    <div className="grid grid-cols-1 mt-6 gap-y-6 gap-x-6 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:gap-x-8 xl:gap-y-8">
       {list.map((value) => (
         <div key={value.id} className="relative group">
           <ImageGridItem onDeleteClick={onDeleteClick} onCopyClick={onCopyClick} value={value} />
