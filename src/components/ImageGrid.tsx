@@ -44,7 +44,7 @@ export const ImageGridItem: FunctionComponent<ImageGridItemProps> = ({
   ...otherProps
 }) => {
   const dispatch = useAppDispatch();
-  const imgSrc = `/${value.url}`;
+  const imgSrc = `${DREAM_API_HOST}/${value.url}`;
   return (
     <div className="relative">
       <div className="overflow-hidden bg-gray-400 dark:bg-gray-400 border-transparent rounded-md border-2 group-hover:border-indigo-400 min-h-80 aspect-w-1 aspect-h-1 group-hover:opacity-95">

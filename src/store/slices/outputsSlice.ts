@@ -1,4 +1,5 @@
 import { createAction, createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { DREAM_API_HOST } from "src/config/env";
 import { PromptConfig, PromptOptions } from "src/types";
 import { withPayloadType } from "src/utils";
 import { PROMPT_DEFAULTS } from "./promptSlice";
@@ -48,7 +49,7 @@ export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
     const config = { ...PROMPT_DEFAULTS, ...options };
     dispatch(promptOutputConfig(config));
     const body = JSON.stringify(config);
-    const response = await fetch("/dream", {
+    const response = await fetch(`${DREAM_API_HOST}/dream`, {
       method: "POST",
       body,
     });
@@ -85,11 +86,10 @@ export const promptOutput = createAsyncThunk<OutputResult, PromptOptions>(
 );
 
 export const cancelOutput = createAsyncThunk<void, void>("outputs/prompt", async (_, { dispatch, rejectWithValue }) => {
-  const response = await fetch(`/cancel`, {
+  const response = await fetch(`${DREAM_API_HOST}/cancel`, {
     method: "GET",
   });
-  const body = await response.json();
-  console.log({ body });
+  return await response.json();
 });
 
 type OutputsState = {
